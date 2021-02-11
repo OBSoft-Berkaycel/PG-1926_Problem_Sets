@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Mükemmel Sayı</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet"  href="style.css">
+</head>
+<body>
+
+		<form>
+			<input type="text" id="input" class="input">
+			<input type="button" class="button" onclick="calculate(document.getElementById('input').value)" value="calculate">	
+		</form>
+		<div id="block">
+			
+		</div>
+
+		
+		<script >
+			const sonucBlock = document.createElement("p");
+			const divBlock = document.getElementById('block').appendChild(sonucBlock);
+			function calculate(number) {
+				console.log("Gelen sayi: "+number);
+	
+			var result = 0;
+			for (var i = 1; i < number ; i++) {
+				if(number%i == 0){
+					result += i;
+				}
+			}
+			if(result == number){
+				console.log("Bu sayı mükemmel sayıdır!!! " + result);
+				sonucBlock.innerHTML = "Bu sayı mükemmel sayıdır!!!";
+			}else{
+				console.log("Bu sayı mükemmel sayı değildir!!! " + result);
+				sonucBlock.innerHTML = "Bu sayı mükemmel sayı değildir";
+			}
+			//return result;
+			}
+
+		</script>
+</body>
+</html>
