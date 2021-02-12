@@ -1,21 +1,12 @@
 <?php 
+
 header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Credentials: true");
 header('Access-Control-Allow-Headers: X-gelen_dataed-With');
 header('Access-Control-Allow-Headers: Content-Type');
 header('Access-Control-Allow-Methods: POST, GET, OPTIONS, DELETE, PUT');
 
-
-$host = 'localhost';
-$user = 'root';
-$pass = '';
-$data = 'google_db';
-
-try {
-	$pdo = new PDO('mysql:host='.$host.';dbname='.$data.';charset=utf8', $user, $pass);
-} catch (PDOException $e) {
-	print "Error!: " . $e->getMessage();
-}
+require('db_config.php');
 
  $data = json_decode(file_get_contents('php://input'), true);
  $service_type = $data["service_type"];
@@ -28,12 +19,19 @@ try {
  		$data_json = $data['login_data'];
 		
 
-		$stmt = $pdo->prepare("SELECT * FROM user");
+		$stmt = $pdo->prepare("SELECT * FROM `user` WHERE USERNAME = '".$data_json['username']."' AND PASSWORD= '".$data_json['password']."'");
 		$stmt->execute();
 		$row = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		
+		if ($row == NULL) {
+			$returnData = false;
+			
+		} else {
+			$returnData = $row;
+			
+		}
 
-
-		print_r(json_encode($row, JSON_UNESCAPED_UNICODE));
+		print_r(json_encode($returnData, JSON_UNESCAPED_UNICODE));
 
  	break;
  	case 'signup':
@@ -54,9 +52,10 @@ try {
 	 				$row = false;
 	 				echo 'şifreler aynı değil';
 	 			}else{
-	 				$stmt = $pdo->prepare("INSERT INTO user VALUES (NULL,".$username.",".$data_json['fname'].",".$data_json['lname'].",".$data_json['pass'].",".$data_json['phone'].")");
+	 				$stmt = $pdo->prepare("INSERT INTO `user` (`ID`, `USERNAME`, `FNAME`, `LNAME`, `PASSWORD`, `PHONE`) VALUES (NULL,".$username.",".$data_json['fname'].",".$data_json['lname'].",".$data_json['pass'].",".$data_json['phone'].")");
 	 				$stmt->execute();
-	 				$row = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	 				$row = $username;
+	 				
 	 			}
 			}
  			//test sorgu sonu
@@ -64,7 +63,16 @@ try {
  			
  			print_r(json_encode($row, JSON_UNESCAPED_UNICODE));
  		break;
- 	
+ 		case 'panic':
+ 			
+ 			$user_Id = $data['user_id'];
+ 			$datenow = date('Y:m:d H:i:s');
+
+ 			$sorgu = $pdo->prepare("INSERT INTO panic VALUES(NULL,".$user_Id.",'".$datenow."','location_data')");
+			$sorgu->execute();
+			$test_data = $sorgu->fetchAll(PDO::FETCH_ASSOC);
+
+ 		break;
  	default:
  		
  		print_r("this is the default case");
